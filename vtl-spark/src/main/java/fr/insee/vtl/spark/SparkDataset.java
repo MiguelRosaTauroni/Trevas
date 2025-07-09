@@ -93,8 +93,7 @@ public class SparkDataset implements Dataset {
       org.apache.spark.sql.Dataset<Row> sparkDataset) {
     StructType schema = sparkDataset.schema();
 
-    // Se construye una lista de expresiones para castear en una sola transformación
-    List<Column> castedColumns =
+    var castColumns =
         Arrays.stream(schema.fields())
             .map(
                 field -> {
@@ -109,9 +108,8 @@ public class SparkDataset implements Dataset {
                   }
                   return col;
                 })
-            .collect(Collectors.toList());
-
-    return sparkDataset.select(castedColumns.toArray(new Column[0]));
+            .toArray(Column[]::new);
+    return sparkDataset.select(castColumns);
   }
 
   /** Convert Spark schema to VTL DataStructure efficiently. */
